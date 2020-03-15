@@ -1,0 +1,9 @@
+body {
+  background-color: pink;
+}
+
+li {
+  font-size: 150%;
+  line-height: 2;
+  list-style-type: none;
+}
