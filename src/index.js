@@ -1,47 +1,38 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import SeasonDisplay from './SeasonDisplay';
 import './assets/style.css';
+import SeasonDisplay from './SeasonDisplay';
+import Spinner from './Spinner';
+import ErrorPage from './ErrorPage';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
+  // THIS IS THE ONLY TIME TO DO DIRECT ASSIGNMENT
+  // to this.state / state
+  state = { lat: null, errorMessage: '' };
 
-    // THIS IS THE ONLY TIME TO DO DIRECT ASSIGNMENT
-    // to this.state
-    this.state = {
-      lat: null,
-      lon: null,
-      errorMessage: ''
-    };
-
+  componentDidMount() {
     window.navigator.geolocation.getCurrentPosition(
-      position => {
-        // Called this.setState
-        this.setState({
-          lat: position.coords.latitude,
-          lon: position.coords.longitude
-        });
-      },
-      error => {
-        this.setState({
-          errorMessage: error.message
-        });
-      }
+      // Called this.setState
+      position => this.setState({ lat: position.coords.latitude }),
+      error => this.setState({ errorMessage: error.message })
     );
   }
 
+  renderContent() {
+    if (this.state.errorMessage && !this.state.lat) {
+      return <ErrorPage error={this.state.errorMessage} />;
+    }
+
+    if (!this.state.errorMessage && this.state.lat) {
+      return <SeasonDisplay latitude={this.state.lat} />;
+    }
+
+    return <Spinner message="Please accept location request." />;
+  }
+
   render() {
-    return (
-      <div>
-        <SeasonDisplay
-          latitude={this.state.lat}
-          longitude={this.state.lon}
-          error={this.state.errorMessage}
-        />
-      </div>
-    );
+    return <div>{this.renderContent()}</div>;
   }
 }
 
